@@ -19,3 +19,6 @@ Server Backup CLI is a command-line application designed to manage backups of se
 - each app's database has its own frequency too
 - each database can be full backup  or custom tables or exclude tables
 - database dump for each db engine and the execution command can be locally or using docker run
+- auto configure cronjob
+- notify discord for failure
+- notify discord with daily backup summary
