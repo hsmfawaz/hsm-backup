@@ -43,11 +43,11 @@ func SyncFileHandler(c *cli.Context, db *gorm.DB) error {
 
 func syncApps(config []models.App, db *gorm.DB) error {
 	var lastError error
-
+	existingApps := []string{}
+	// remove any existing apps that are not in the config file
 	for _, app := range config {
 		var existingApp models.App
 		if err := db.Where("name = ?", app.Name).First(&existingApp).Error; err != nil {
-			lastError = err
 
 			if err != gorm.ErrRecordNotFound {
 				continue
@@ -75,12 +75,17 @@ func syncApps(config []models.App, db *gorm.DB) error {
 		existingApp.Policies = app.Policies
 		syncPolicies(db, &existingApp)
 		log.Printf("Updated app: %s", existingApp.Name)
+		existingApps = append(existingApps, existingApp.Name)
 	}
+
+	db.Where("name NOT IN ?", existingApps).Delete(&models.App{})
 
 	return lastError
 }
 
 func syncPolicies(db *gorm.DB, app *models.App) {
+	//todo remove any policies that are not in the config file
+	existingPolicies := []string{}
 	for _, policy := range app.Policies {
 		var existingPolicy models.BackupPolicy
 		if err := db.Where("app_id = ? AND name = ?", app.ID, policy.Name).First(&existingPolicy).Error; err != nil {
@@ -107,4 +112,5 @@ func syncPolicies(db *gorm.DB, app *models.App) {
 			log.Printf("Updated policy: %s, %s", app.Name, policy.Name)
 		}
 	}
+	db.Where("app_id = ? AND name NOT IN ?", app.ID, existingPolicies).Delete(&models.BackupPolicy{})
 }

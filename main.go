@@ -6,12 +6,14 @@ import (
 
 	"github.com/hsmfawaz/hsm-backup/handlers/cli"
 	"github.com/hsmfawaz/hsm-backup/models"
+	"github.com/hsmfawaz/hsm-backup/pkg/utilities"
 	cliV2 "github.com/urfave/cli/v2"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
 func main() {
+	config := utilities.NewConfig()
 	db := configureDB()
 	app := &cliV2.App{
 		Name:  "Hsm Server Backup CLI",
@@ -53,7 +55,7 @@ func main() {
 				},
 				Usage: "Perform backups for all apps or specified apps",
 				Action: func(c *cliV2.Context) error {
-					return cli.PerformBackupHandler(c, db.WithContext(c.Context).Debug())
+					return cli.PerformBackupHandler(c, db.WithContext(c.Context).Debug(), config)
 				},
 			},
 		},

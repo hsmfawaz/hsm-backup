@@ -9,6 +9,9 @@ Server Backup CLI is a command-line application designed to manage backups of se
 - Backup full and custom paths
 - upload the backup locally and externally
 - list backups and manage it
+- CLI API
+- Rest API
+- Providers to save the (ssh,digitalocean, aws s3, google drive)
 
 
 ### Notes
@@ -22,3 +25,7 @@ Server Backup CLI is a command-line application designed to manage backups of se
 - auto configure cronjob
 - notify discord for failure
 - notify discord with daily backup summary
+
+## todo 
+
+i was working on the perform backup ,test if the get stats is working and save it to database and then perform the backup process

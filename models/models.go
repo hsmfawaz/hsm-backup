@@ -9,7 +9,9 @@ import (
 type App struct {
 	gorm.Model
 	Name          string         `json:"name"`
+	TmpPath       string         `json:"tmp_path" gorm:"default:'/tmp'"`
 	Policies      []BackupPolicy `json:"policies" gorm:"foreignKey:AppID"`
+	Source        AppSource      `json:"source" gorm:"serializer:json"`
 	LastDiskUsage float32        `json:"last_disk_usage"`
 	LastBackup    string         `json:"last_backup"`
 	LastError     string         `json:"last_error"`
@@ -21,7 +23,7 @@ type BackupPolicy struct {
 	Name           string          `json:"name"`
 	Path           string          `json:"path"`
 	Type           PolicyType      `json:"type"`
-	Configuration  map[string]any  `gorm:"serializer:json"`
+	Configuration  map[string]any  `gorm:"serializer:json" json:"configuration"`
 	Interval       uint            `json:"interval"`
 	Retention      RetentionPolicy `json:"retention" gorm:"serializer:json"`
 	Enabled        bool            `json:"enabled"`
@@ -36,7 +38,10 @@ type RetentionPolicy struct {
 	PerWeek  int `json:"per_week"`
 	PerMonth int `json:"per_month"`
 }
-
+type AppSource struct {
+	Type          SourceType     `json:"type"`
+	Configuration map[string]any `json:"configuration"`
+}
 type Backup struct {
 	gorm.Model
 	AppID          uint `json:"app_id"`
@@ -44,8 +49,13 @@ type Backup struct {
 }
 
 type PolicyType string
+type SourceType string
 
 const (
 	PolicyTypeDatabase   PolicyType = "database"
 	PolicyTypeFileSystem PolicyType = "filesystem"
+)
+const (
+	SourceTypeLocal SourceType = "local"
+	SourceTypeSSH   SourceType = "ssh"
 )
